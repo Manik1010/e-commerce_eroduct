@@ -79,6 +79,31 @@ const getSingleProduct = async (req: Request, res: Response) => {
         })
     }
 }
+const deleteSingleProduct = async (req: Request, res: Response) => {
+    try {
+        const { productId } = req.params;
+        const result = await ProductServices.deleteProductIntoDB(productId)
+        if (result.deletedCount > 0) {
+            res.status(200).json({
+                success: true,
+                message: "Product deleted successfully!",
+                data: null
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: "Product not found!"
+            });
+        }
+
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "Something went wrong",
+            error: err
+        })
+    }
+}
 const updateProduct = async (req: Request, res: Response) => {
     try {
         const { productId } = req.params;
@@ -110,4 +135,6 @@ export const ProductControllers = {
     createProduct,
     getAllProducts,
     getSingleProduct,
+    updateProduct,
+    deleteSingleProduct,
 };

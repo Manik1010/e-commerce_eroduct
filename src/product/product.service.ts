@@ -32,6 +32,13 @@ const updateProductIntoDB = async (productId: string, updatedProduct: TProduct) 
     return result;
 };
 
+const deleteProductIntoDB = async (id: string) => {
+    if (!isValidObjectId(id)) {
+        throw new Error("Invalid product ID");
+    }
+    const result = await ProductModel.deleteOne({ _id: id });
+    return result;
+}
 
 const searchProducts = async (searchTerm: string): Promise<TProduct[]> => {
     const regex = new RegExp(searchTerm, 'i');
@@ -51,4 +58,5 @@ export const ProductServices = {
     getSingleProductIntoDB,
     searchProducts,
     updateProductIntoDB,
+    deleteProductIntoDB,
 };
