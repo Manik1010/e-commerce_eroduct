@@ -1,48 +1,7 @@
-// import { Request, Response } from "express";
-// import { ProductSevices } from "./product.service";
-
-// const createProduct = async (req: Request, res: Response) =>{
-
-//     // const product = req.body
-//     // // We call service function send this data.
-//     // const result = await ProductServices.createProductIntoDB(product);
-
-//     // // send response.
-//     // res.status(200).json({
-//     //     success: true,
-//     //     message: 'Product is created successfully.',
-//     //     data: result,
-//     // });
-//     try{
-//         const {product: productData} = req.body;
-//         console.log(productData)
-//         // We call service function send this data.
-//         const result = await ProductSevices.createProductIntoDB(productData);
-//         // send response.
-//         res.status(200).json({
-//             success: true,
-//             message: 'Product is created successfully.',
-//             data: result,
-//         })
-//     }catch(err){
-//         console.log(err);
-//         res.status(500).json({
-//             success: false,
-//             message: 'An error occurred while creating the product.',
-//             error: err.message
-//         });
-//     }
-// }
-
-// export const ProductControllers = {
-//     createProduct,
-// }
-
-
-
 // product.controller.ts
 import { Request, Response } from "express";
 import { ProductServices } from "./product.service";
+import TProduct from "./product.interface";
 
 const createProduct = async (req: Request, res: Response) => {
     try {
@@ -67,7 +26,34 @@ const createProduct = async (req: Request, res: Response) => {
         });
     }
 };
-
+const getAllProducts = async (req: Request, res: Response) => {
+    try {
+        const searchTerm: string = req.query.searchTerm as string;
+        let products: TProduct[];
+        let message: string;
+        if (searchTerm) {
+            // Search products if a search term is provided
+            products = await ProductServices.searchProducts(searchTerm);
+            message = `Products matching search term '${searchTerm}' fetched successfully!`
+        } else {
+            // Retrieve all products if no search term is provided
+            products = await ProductServices.getAllProductsIntoDB();
+            message = 'Products fetched successfully!'
+        }
+        res.status(200).json({
+            success: true,
+            message: message,
+            data: products
+        });
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "Something went wrong",
+            error: err
+        })
+    }
+}
 export const ProductControllers = {
     createProduct,
+    getAllProducts,
 };
