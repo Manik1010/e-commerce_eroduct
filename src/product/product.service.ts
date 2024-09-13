@@ -20,6 +20,18 @@ const getSingleProductIntoDB = async (id: string) => {
     return result;
 }
 
+const updateProductIntoDB = async (productId: string, updatedProduct: TProduct) => {
+    if (!isValidObjectId(productId)) {
+        throw new Error("Invalid product ID");
+    }
+    const result = await ProductModel.findByIdAndUpdate(
+        productId,
+        { $set: updatedProduct },
+        { new: true, runValidators: true }
+    );
+    return result;
+};
+
 
 const searchProducts = async (searchTerm: string): Promise<TProduct[]> => {
     const regex = new RegExp(searchTerm, 'i');
@@ -38,4 +50,5 @@ export const ProductServices = {
     getAllProductsIntoDB,
     getSingleProductIntoDB,
     searchProducts,
+    updateProductIntoDB,
 };
