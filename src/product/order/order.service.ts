@@ -1,7 +1,7 @@
 import { isValidObjectId } from "mongoose";
-import ProductModel from "../product/product.model";
 import TOrder from "./order.interface";
 import OrderModel from "./order.model";
+import ProductModel from "../product.model";
 
 const addOrderIntoDB = async (order: TOrder) => {
     const { productId, quantity, price } = order;
@@ -39,7 +39,7 @@ const addOrderIntoDB = async (order: TOrder) => {
     const result = await OrderModel.create({ ...order, price: totalPrice });
     return result;
 };
-const getAllOrdersFromDB = async () => {
+const getAllOrdersIntoDB = async () => {
     const orders = await OrderModel.find();
     return orders;
 }
@@ -57,6 +57,6 @@ const searchOrdersByEmail = async (searchTerm: string): Promise<TOrder[]> => {
 
 export const OrderServices = {
     addOrderIntoDB,
-    getAllOrdersFromDB,
+    getAllOrdersIntoDB,
     searchOrdersByEmail
 };

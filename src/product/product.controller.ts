@@ -3,10 +3,41 @@ import { Request, Response } from "express";
 import { ProductServices } from "./product.service";
 import TProduct from "./product.interface";
 
+// const createProduct = async (req: Request, res: Response) => {
+//     try {
+//         //const { product: productData } = req.body;
+//         const { product: productData } = req.body;
+//         console.log(productData);
+
+//         // Call the service function to save the product to the database
+//         const result = await ProductServices.createProductIntoDB(productData);
+
+//         // Send response
+//         res.status(200).json({
+//             success: true,
+//             message: 'Product is created successfully.',
+//             data: result,
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({
+//             success: false,
+//             message: 'An error occurred while creating the product.',
+//             error: (err as Error).message,
+//         });
+//     }
+// };
 const createProduct = async (req: Request, res: Response) => {
     try {
         const { product: productData } = req.body;
         console.log(productData);
+        // Check if all required fields are provided
+        if (!productData || !productData.name || !productData.description || !productData.price || !productData.category || !productData.inventory || !productData.variants) {
+            return res.status(400).json({
+                success: false,
+                message: 'All required fields (name, description, price, category, tags, variants, inventory) must be provided.',
+            });
+        }
 
         // Call the service function to save the product to the database
         const result = await ProductServices.createProductIntoDB(productData);
@@ -18,7 +49,6 @@ const createProduct = async (req: Request, res: Response) => {
             data: result,
         });
     } catch (err) {
-        console.log(err);
         res.status(500).json({
             success: false,
             message: 'An error occurred while creating the product.',
@@ -26,6 +56,7 @@ const createProduct = async (req: Request, res: Response) => {
         });
     }
 };
+
 const getAllProducts = async (req: Request, res: Response) => {
     try {
         const searchTerm: string = req.query.searchTerm as string;

@@ -3,11 +3,22 @@ import TProduct from "./product.interface";
 import ProductModel from "./product.model";
 import { isValidObjectId } from "mongoose";
 
+// const createProductIntoDB = async (product: TProduct) => {
+//     const result = await ProductModel.create(product);
+//     return result;
+// };
 const createProductIntoDB = async (product: TProduct) => {
-    const result = await ProductModel.create(product);
-    return result;
-};
+    try {
+        const result = await ProductModel.create(product);
+        return result;
+    } catch (err: any) {
+        // Log the error for debugging
+        console.error('Error creating product:', err);
 
+        // Re-throw the error to the controller to send the response
+        throw new Error(err.message);
+    }
+};
 const getAllProductsIntoDB = async () => {
     const products = await ProductModel.find();
     return products;

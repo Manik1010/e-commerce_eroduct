@@ -39,7 +39,7 @@ const getAllOrders = async (req: Request, res: Response) => {
             message = `Orders fetched successfully for user email : '${searchTerm}'`
         } else {
             // Retrieve all orders if no search term is provided
-            orders = await OrderServices.getAllOrdersFromDB();
+            orders = await OrderServices.getAllOrdersIntoDB();
             message = 'Orders fetched successfully!'
         }
         res.status(200).json({
@@ -55,7 +55,34 @@ const getAllOrders = async (req: Request, res: Response) => {
         })
     }
 }
+const getOrderByEmail = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.params;
+        const result = await OrderServices.searchOrdersByEmail(email)
+        if (result) {
+            res.status(200).json({
+                success: true,
+                message: "Product fetched successfully!",
+                data: result
+            })
+        }
+        else {
+            res.status(404).json({
+                success: false,
+                message: "Product not found!"
+            });
+        }
+
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "Something went wrong",
+            error: err
+        })
+    }
+}
 export const OrderControllers = {
     addOrder,
-    getAllOrders
+    getAllOrders,
+    getOrderByEmail,
 }
