@@ -1,7 +1,7 @@
 import { isValidObjectId } from "mongoose";
 import TOrder from "./order.interface";
 import OrderModel from "./order.model";
-import ProductModel from "../product.model";
+import ProductModel from "../product/product.model";
 
 const addOrderIntoDB = async (order: TOrder) => {
     const { productId, quantity, price } = order;

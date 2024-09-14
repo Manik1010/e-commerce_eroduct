@@ -6,7 +6,6 @@ import orderValidationSchema from "./order.validation";
 
 const addOrder = async (req: Request, res: Response) => {
     try {
-
         const order = req.body;
         const validateOrderData = orderValidationSchema.parse(order);
         if (!validateOrderData.email || !validateOrderData.productId || !validateOrderData.price || !validateOrderData.quantity) {
@@ -18,12 +17,26 @@ const addOrder = async (req: Request, res: Response) => {
             message: "Product created successfully!",
             data: result
         })
-    } catch (err: any) {
-        res.status(500).json({
-            success: false,
-            message: (err instanceof ZodError ? err.errors[0].message : err.message) || "Something went wrong",
-            error: err
-        });
+    } catch (err: unknown) {  // Changed from 'any' to 'unknown'
+        if (err instanceof ZodError) {
+            res.status(400).json({
+                success: false,
+                message: err.errors[0].message,
+                error: err.errors,
+            });
+        } else if (err instanceof Error) {
+            res.status(500).json({
+                success: false,
+                message: err.message,
+                error: err
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "Something went wrong",
+                error: err
+            });
+        }
     }
 }
 
@@ -33,12 +46,9 @@ const getAllOrders = async (req: Request, res: Response) => {
         let orders: TOrder[];
         let message: string;
         if (searchTerm) {
-            // Search orders if a search term is provided
             orders = await OrderServices.searchOrdersByEmail(searchTerm);
-
             message = `Orders fetched successfully for user email : '${searchTerm}'`
         } else {
-            // Retrieve all orders if no search term is provided
             orders = await OrderServices.getAllOrdersIntoDB();
             message = 'Orders fetched successfully!'
         }
@@ -47,14 +57,23 @@ const getAllOrders = async (req: Request, res: Response) => {
             message: message,
             data: orders
         });
-    } catch (err: any) {
-        res.status(500).json({
-            success: false,
-            message: err.message || "Something went wrong",
-            error: err
-        })
+    } catch (err: unknown) {  // Changed from 'any' to 'unknown'
+        if (err instanceof Error) {
+            res.status(500).json({
+                success: false,
+                message: err.message,
+                error: err
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "Something went wrong",
+                error: err
+            });
+        }
     }
 }
+
 const getOrderByEmail = async (req: Request, res: Response) => {
     try {
         const { email } = req.params;
@@ -73,14 +92,23 @@ const getOrderByEmail = async (req: Request, res: Response) => {
             });
         }
 
-    } catch (err: any) {
-        res.status(500).json({
-            success: false,
-            message: err.message || "Something went wrong",
-            error: err
-        })
+    } catch (err: unknown) {  // Changed from 'any' to 'unknown'
+        if (err instanceof Error) {
+            res.status(500).json({
+                success: false,
+                message: err.message,
+                error: err
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: "Something went wrong",
+                error: err
+            });
+        }
     }
 }
+
 export const OrderControllers = {
     addOrder,
     getAllOrders,
